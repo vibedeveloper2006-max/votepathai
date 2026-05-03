@@ -117,4 +117,20 @@ app.get('/api/health', async (req, res) => {
 // Error handler
 app.use(errorHandler);
 
+// ── Production Frontend Serving ──────────────────────────────
+// In production, serve the built React app from the client/dist folder
+if (process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  const distPath = path.join(__dirname, '../client/dist');
+  
+  app.use(express.static(distPath));
+  
+  // Catch-all route to serve index.html for SPA routing
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
+  });
+}
+
 module.exports = app;
